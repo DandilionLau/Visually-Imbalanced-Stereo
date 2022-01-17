@@ -202,7 +202,7 @@ class KPN_VIS(torch.nn.Module):
         variableDot1 = SeparableConvolution(self.filter_size_vertical,self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels )
         '''
         horizontal_kernels = self.moduleHorizontal_new1(variableCombine)
-        
+
         # Enabled guided filters by uncommenting this.
         # horizontal_kernels = self.guided_filter(rgb2gray(variableInput1), horizontal_kernels)
         
@@ -215,6 +215,7 @@ class KPN_VIS(torch.nn.Module):
                 max_mean = mean
                 max_c = i
 
+
         horizontal_kernels[:,max_c,:,:] = self.guided_filter(rgb2gray(variableInput1), horizontal_kernels[:,max_c,:,:].clone().unsqueeze(1))
         '''
         slice2 = horizontal_kernels[0,max_c,:,:]
@@ -223,7 +224,9 @@ class KPN_VIS(torch.nn.Module):
         slice2 *= 255
         PIL.Image.fromarray(slice2.cpu().numpy().astype(np.uint8)).save("gf.jpg")
         '''
+    
         variableDot2 = SeparableConvolution(self.filter_size_vertical,self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
+
 
         #return  variableDot1.detach(), variableDot2
         return  variableDot2

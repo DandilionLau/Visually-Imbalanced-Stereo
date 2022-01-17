@@ -14,6 +14,8 @@ class SeparableConvolution(torch.autograd.Function):
     # end
 
     def forward(self, input, vertical, horizontal):
+
+
         self.g_input = input
         self.g_vertical = vertical
         self.g_horizontal = horizontal
@@ -25,7 +27,7 @@ class SeparableConvolution(torch.autograd.Function):
         intFilterSizeHorizontal = horizontal.size(1)
         intOutputHeight = min(vertical.size(2), horizontal.size(2))
         intOutputWidth = min(vertical.size(3), horizontal.size(3))
-
+        print('sc2')
         #Code for printing horizontal kernels
         #print(horizontal[:,:,100:105,150])
         '''
@@ -58,8 +60,15 @@ class SeparableConvolution(torch.autograd.Function):
         assert(vertical.is_contiguous() == True)
         assert(horizontal.is_contiguous() == True)
 
+        print('sc3')
         output = input.new().resize_(intBatches, intInputDepth, intOutputHeight, intOutputWidth).zero_()
         if input.is_cuda == True:
+
+            '''
+            Here is the problem
+            '''
+
+            print('sc4')
             _ext.cunnex.SeparableConvolution_cuda_forward(
                     input,
                     vertical,
@@ -68,6 +77,7 @@ class SeparableConvolution(torch.autograd.Function):
                     self.filter_size_horizontal,
                     output
                     )
+            print('sc5')
 
         elif input.is_cuda == False:
             raise NotImplementedError() # CPU VERSION NOT IMPLEMENTED

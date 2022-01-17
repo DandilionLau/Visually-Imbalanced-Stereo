@@ -15,8 +15,8 @@ from torch.utils.data import DataLoader
 from models import *
 from utils import *
 
-torch.backends.cudnn.benchmark = True
-torch.backends.cudnn.enabled = True
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.enabled = False
 
 ##########################################################
 parser = argparse.ArgumentParser(description='Kernel Prediction Network')
@@ -48,6 +48,9 @@ if(opt.gpu_num == 1):
     torch.cuda.device(0)
 else:
     torch.cuda.device(range(opt.gpu_num+1))
+
+print('Where Am I')
+
 
 perceptual_layers = ['0', '5', '10', '19', '28']
 norm_stats = {'mean': [0.5, 0.5, 0.5], 'std': [0.5, 0.5, 0.5]}
@@ -188,10 +191,12 @@ if True:
     modulePaddingInput = modulePaddingInput.cuda()
     modulePaddingOutput = modulePaddingOutput.cuda()
 
+
 def train(epoch):
     for iteration, batch in enumerate(training_data_loader, 1):
         left_view_cpu, right_view_cpu, impaired_view_cpu, filename = batch[0], batch[1], batch[2], batch[3]
 
+        print('?')
         modulePaddingInput = torch.nn.ReplicationPad2d([intPaddingLeft, intPaddingRight + intPaddingWidth, intPaddingTop, intPaddingBottom + intPaddingHeight])
         modulePaddingOutput = torch.nn.ReplicationPad2d([0 - intPaddingLeft, 0 - intPaddingRight - intPaddingWidth, 0 - intPaddingTop, 0 - intPaddingBottom - intPaddingHeight])
 
@@ -244,9 +249,11 @@ def test(epoch):
     with torch.no_grad():
         for batch in testing_data_loader:
             left_view_cpu, right_view_cpu, impaired_view_cpu, filename = batch[0], batch[1], batch[2], batch[3]
+            
 
             modulePaddingInput = torch.nn.ReplicationPad2d([intPaddingLeft, intPaddingRight + intPaddingWidth, intPaddingTop, intPaddingBottom + intPaddingHeight])
             modulePaddingOutput = torch.nn.ReplicationPad2d([0 - intPaddingLeft, 0 - intPaddingRight - intPaddingWidth, 0 - intPaddingTop, 0 - intPaddingBottom - intPaddingHeight])
+
 
             modulePaddingInput = modulePaddingInput.cpu()
             modulePaddingOutput = modulePaddingOutput.cpu()
@@ -256,13 +263,16 @@ def test(epoch):
 
             variablePaddingFirst = variablePaddingFirst.cuda()
             variablePaddingSecond = variablePaddingSecond.cuda()
-
+            
             variablePaddingOutput = moduleNetwork(variablePaddingFirst, variablePaddingSecond)
+
             variablePaddingOutput = modulePaddingOutput(variablePaddingOutput)
+
 
             right_view_gt = torch.autograd.Variable(right_view_cpu).cpu()
             right_view_pred = variablePaddingOutput.cpu()
-
+ 
+            # Here 
             avg_psnr += 10 * math.log10(1 / critirion(right_view_pred,right_view_gt).item())
             avg_msssim += msssim_loss(right_view_pred,right_view_gt).item()
 
@@ -311,14 +321,16 @@ def checkpoint(epoch):
     torch.save(moduleNetwork.state_dict(),KPN_out_path)
     print("Checkpoint saved to {}".format("checkpoint/" + opt.dataset))
 
+
+
 for epoch in range(1, opt.nEpochs + 1):
+
     if(opt.only_test == 1):
         test(epoch)
         exit()
 
     test(epoch)
     train(epoch)
-
 
     if epoch % 10 == 0:
         checkpoint(epoch)
