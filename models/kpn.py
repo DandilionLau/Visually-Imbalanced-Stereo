@@ -23,6 +23,8 @@ class std_norm(nn.Module):
             out.append(normalized)
         return torch.cat(out, dim=1)
 
+
+
 class KPN_VIS(torch.nn.Module):
     def __init__(self, filter_size_vertical, filter_size_horizontal):
         self.filter_size_vertical = filter_size_vertical
@@ -145,6 +147,10 @@ class KPN_VIS(torch.nn.Module):
         self.guided_filter = GuidedFilter(5,1e-2)
 
         self.modulePad = torch.nn.ReplicationPad2d([ int(math.floor(filter_size_horizontal / 2.0)), int(math.floor(filter_size_horizontal / 2.0)), int(math.floor(filter_size_vertical / 2.0)), int(math.floor(filter_size_vertical / 2.0)) ])
+    
+        # Separable Conv
+    
+    
     # end
 
     #def forward(self, variableInput1, variableInput2):
@@ -201,6 +207,8 @@ class KPN_VIS(torch.nn.Module):
         PIL.Image.fromarray(slice1.cpu().numpy().astype(np.uint8)).save("no_gf.jpg")
         variableDot1 = SeparableConvolution(self.filter_size_vertical,self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels )
         '''
+
+
         horizontal_kernels = self.moduleHorizontal_new1(variableCombine)
 
         # Enabled guided filters by uncommenting this.
@@ -224,14 +232,40 @@ class KPN_VIS(torch.nn.Module):
         slice2 *= 255
         PIL.Image.fromarray(slice2.cpu().numpy().astype(np.uint8)).save("gf.jpg")
         '''
-    
-        variableDot2 = SeparableConvolution(self.filter_size_vertical,self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
+        '''
+        self.g_input = input
+        self.g_vertical = vertical
+        self.g_horizontal = horizontal
+        intBatches = input.size(0)
+        intInputDepth = input.size(1)
+        intInputHeight = input.size(2)
+        intInputWidth = input.size(3)
+        intFilterSizeVertical = vertical.size(1)
+        intFilterSizeHorizontal = horizontal.size(1)
+        intOutputHeight = min(vertical.size(2), horizontal.size(2))
+        intOutputWidth = min(vertical.size(3), horizontal.size(3))
+        '''
 
+
+        print("Filter size vertical horizontal: ", self.filter_size_vertical,  self.filter_size_horizontal, self.modulePad(variableInput1).size()  )
+
+
+
+        variableDot2 = SeparableConvolution(self.filter_size_vertical,  self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
 
         #return  variableDot1.detach(), variableDot2
         return  variableDot2
     # end
 # end
+
+
+
+
+
+
+
+
+
 
 class KPN_std(torch.nn.Module):
     def __init__(self, filter_size_vertical, filter_size_horizontal):

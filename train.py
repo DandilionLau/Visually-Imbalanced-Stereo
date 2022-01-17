@@ -196,7 +196,6 @@ def train(epoch):
     for iteration, batch in enumerate(training_data_loader, 1):
         left_view_cpu, right_view_cpu, impaired_view_cpu, filename = batch[0], batch[1], batch[2], batch[3]
 
-        print('?')
         modulePaddingInput = torch.nn.ReplicationPad2d([intPaddingLeft, intPaddingRight + intPaddingWidth, intPaddingTop, intPaddingBottom + intPaddingHeight])
         modulePaddingOutput = torch.nn.ReplicationPad2d([0 - intPaddingLeft, 0 - intPaddingRight - intPaddingWidth, 0 - intPaddingTop, 0 - intPaddingBottom - intPaddingHeight])
 
@@ -264,12 +263,16 @@ def test(epoch):
             variablePaddingFirst = variablePaddingFirst.cuda()
             variablePaddingSecond = variablePaddingSecond.cuda()
             
+            print(variablePaddingFirst.size(), variablePaddingSecond.size())
+
             variablePaddingOutput = moduleNetwork(variablePaddingFirst, variablePaddingSecond)
 
             variablePaddingOutput = modulePaddingOutput(variablePaddingOutput)
 
 
             right_view_gt = torch.autograd.Variable(right_view_cpu).cpu()
+
+
             right_view_pred = variablePaddingOutput.cpu()
  
             # Here 
