@@ -51,7 +51,6 @@ else:
 
 print('Where Am I')
 
-
 perceptual_layers = ['0', '5', '10', '19', '28']
 norm_stats = {'mean': [0.5, 0.5, 0.5], 'std': [0.5, 0.5, 0.5]}
 VGG19_Net = Perceptual.vgg19_wrapper(pretrained=True).cuda()
@@ -147,7 +146,7 @@ if(opt.loading_weights == 1):
     elif(opt.weight_source == 'ours'):
         moduleNetwork = KPN_VIS(opt.filter_size_vertical,opt.filter_size_horizontal)
         old_state_dict = torch.load('KPN.pth')
-        moduleNetwork.load_state_dict(old_state_dict)
+        moduleNetwork.load_state_dict(old_state_dict, strict=False)
         moduleNetwork.cuda()
         print("===> Loading Weight from Previous Training")
 
@@ -265,18 +264,26 @@ def test(epoch):
             
             print(variablePaddingFirst.size(), variablePaddingSecond.size())
 
+
+            # ModuleNetwork
             variablePaddingOutput = moduleNetwork(variablePaddingFirst, variablePaddingSecond)
 
-            variablePaddingOutput = modulePaddingOutput(variablePaddingOutput)
+
+            print('SeparableConvolution output: ', variablePaddingOutput.size())
+            
+            #variablePaddingOutput = modulePaddingOutput(variablePaddingOutput)
+            #print('SeparableConvolution pad output: ', variablePaddingOutput.size())
 
 
             right_view_gt = torch.autograd.Variable(right_view_cpu).cpu()
 
 
             right_view_pred = variablePaddingOutput.cpu()
- 
+
+            print(right_view_gt.size())
+
             # Here 
-            avg_psnr += 10 * math.log10(1 / critirion(right_view_pred,right_view_gt).item())
+            avg_psnr += 10 * math.log10(1 / critirion(right_view_pred, right_view_gt).item())
             avg_msssim += msssim_loss(right_view_pred,right_view_gt).item()
 
             if not os.path.exists(os.path.join("result", opt.dataset)):

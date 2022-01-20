@@ -130,6 +130,7 @@ void SeparableConvolution_kernel_forward(
 	THCudaCheck(cudaGetLastError());
 }
 
+
 void SeparableConvolution_kernel_forward_only_horizontal(
 	THCState* state,
 	THCudaTensor* input,
@@ -148,6 +149,7 @@ void SeparableConvolution_kernel_forward_only_horizontal(
 
 	THCudaCheck(cudaGetLastError());
 }
+
 
 void SeparableConvolution_kernel_forward_only_vertical(
 	THCState* state,

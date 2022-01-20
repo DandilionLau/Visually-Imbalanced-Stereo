@@ -25,6 +25,20 @@ class std_norm(nn.Module):
 
 
 
+class SeparableConv2d(nn.Module):
+    def __init__(self,in_channels,out_channels,kernel_size=1,stride=1,padding=0,dilation=1,bias=False):
+        super(SeparableConv2d,self).__init__()
+
+        self.conv1 = nn.Conv2d(in_channels,in_channels,kernel_size,stride,padding,dilation,groups=in_channels,bias=bias)
+        self.pointwise = nn.Conv2d(in_channels,out_channels,1,1,0,1,1,bias=bias)
+    
+    def forward(self,x):
+        x = self.conv1(x)
+        x = self.pointwise(x)
+        return x
+
+
+
 class KPN_VIS(torch.nn.Module):
     def __init__(self, filter_size_vertical, filter_size_horizontal):
         self.filter_size_vertical = filter_size_vertical
@@ -40,7 +54,6 @@ class KPN_VIS(torch.nn.Module):
                 torch.nn.Conv2d(in_channels=intOutput, out_channels=intOutput, kernel_size=3, stride=1, padding=1),
                 torch.nn.ReLU(inplace=False)
             )
-        # end
 
         def Subnet_Horizontal():
             if(filter_size_horizontal == 0):
@@ -147,9 +160,12 @@ class KPN_VIS(torch.nn.Module):
         self.guided_filter = GuidedFilter(5,1e-2)
 
         self.modulePad = torch.nn.ReplicationPad2d([ int(math.floor(filter_size_horizontal / 2.0)), int(math.floor(filter_size_horizontal / 2.0)), int(math.floor(filter_size_vertical / 2.0)), int(math.floor(filter_size_vertical / 2.0)) ])
-    
+
+
+        self.additional_dot_kernal = torch.nn.Conv2d(in_channels=1, out_channels=3, kernel_size=(3, 5), stride=1, padding=1)
+        self.additional_ada_pool = nn.AdaptiveMaxPool2d((375,1242))
+        
         # Separable Conv
-    
     
     # end
 
@@ -208,7 +224,6 @@ class KPN_VIS(torch.nn.Module):
         variableDot1 = SeparableConvolution(self.filter_size_vertical,self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels )
         '''
 
-
         horizontal_kernels = self.moduleHorizontal_new1(variableCombine)
 
         # Enabled guided filters by uncommenting this.
@@ -246,24 +261,27 @@ class KPN_VIS(torch.nn.Module):
         intOutputWidth = min(vertical.size(3), horizontal.size(3))
         '''
 
+        print("Filter size vertical horizontal: ", self.filter_size_vertical,  self.filter_size_horizontal, self.modulePad(variableInput1).size(), self.moduleVertical_new1(variableCombine).size(), horizontal_kernels.size() )
 
-        print("Filter size vertical horizontal: ", self.filter_size_vertical,  self.filter_size_horizontal, self.modulePad(variableInput1).size()  )
+        # Original Code
+        #variableDot2 = SeparableConvolution(self.filter_size_vertical,  self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
+        #variableDot2 = self.moduleVertical_new1(variableCombine)
+        # variableDot2 = self.moduleVertical_new1(variableCombine)
+        # variableDot2 = torch.zeros((1,3,375,1242))
+        
+        trial_v2 = self.moduleVertical_new1(variableCombine)
+        print('trial_v2', trial_v2.size())
+        trial_v2 = self.additional_dot_kernal(trial_v2)
+        print('trial_v2', trial_v2.size())
+        trial_v2 = self.additional_ada_pool(trial_v2)
+        print('trial_v2', trial_v2.size())
 
-
-
-        variableDot2 = SeparableConvolution(self.filter_size_vertical,  self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
-
+        variableDot2 = trial_v2
+        print('SeparableConvolution output: ', variableDot2.size())
         #return  variableDot1.detach(), variableDot2
         return  variableDot2
     # end
 # end
-
-
-
-
-
-
-
 
 
 

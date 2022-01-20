@@ -15,7 +15,6 @@ class SeparableConvolution(torch.autograd.Function):
 
     def forward(self, input, vertical, horizontal):
 
-
         self.g_input = input
         self.g_vertical = vertical
         self.g_horizontal = horizontal
@@ -23,10 +22,14 @@ class SeparableConvolution(torch.autograd.Function):
         intInputDepth = input.size(1)
         intInputHeight = input.size(2)
         intInputWidth = input.size(3)
+
         intFilterSizeVertical = vertical.size(1)
         intFilterSizeHorizontal = horizontal.size(1)
         intOutputHeight = min(vertical.size(2), horizontal.size(2))
         intOutputWidth = min(vertical.size(3), horizontal.size(3))
+
+
+        print('size checking' ,input.size(), vertical.size(), horizontal.size())
         print('sc2')
         #Code for printing horizontal kernels
         #print(horizontal[:,:,100:105,150])
@@ -127,7 +130,6 @@ class SeparableConvolution(torch.autograd.Function):
                     grad_vertical,
                     grad_horizontal
                     )
-
 
         elif grad_output.is_cuda == False:
             raise NotImplementedError() # CPU VERSION NOT IMPLEMENTED
