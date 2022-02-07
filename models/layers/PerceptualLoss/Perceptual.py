@@ -3,7 +3,7 @@ import numpy as np
 import torch.nn as nn
 import torch
 
-import vgg
+from . import vgg
 
 class std_norm(nn.Module):
     def __init__(self, inverse=False):
@@ -30,7 +30,7 @@ class vgg19_wrapper(nn.Module):
         self.layers = vgg19.features
         if pretrained:
             vgg19.load_state_dict(torch.load('./weights/vgg19.pth'))
-            print "===> VGG19 Wrapper: Using Pretrained Weights."
+            print ("===> VGG19 Wrapper: Using Pretrained Weights.")
             self.layers = vgg19.features
         self.norm_stats = {'mean': (0.485, 0.456, 0.406),
                            'std' : (0.229, 0.224, 0.225)}

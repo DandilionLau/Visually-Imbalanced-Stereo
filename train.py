@@ -66,7 +66,7 @@ PerceptualLoss = Perceptual.loss().cuda()
 def adjust_learning_rate(optimizer, epoch):
     for param_group in optimizer.param_groups:
         param_group['lr'] = param_group['lr'] * 0.9
-        print("===> Update learning rate:" + str(param_group['lr']))
+        ("===> Update learning rate:" + str(param_group['lr']))
 
 def weights_init(m):
     if isinstance(m, torch.nn.Conv2d):

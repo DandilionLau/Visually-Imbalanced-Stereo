@@ -1,7 +1,8 @@
 import torch
 import PIL
 import numpy as np
-import _ext.cunnex
+#import _ext.cunnex
+from ._ext import cunnex as extcun
 
 class SeparableConvolution(torch.autograd.Function):
     def __init__(self, filter_size_vertical, filter_size_horizontal):
@@ -72,7 +73,7 @@ class SeparableConvolution(torch.autograd.Function):
             '''
 
             print('sc4')
-            _ext.cunnex.SeparableConvolution_cuda_forward(
+            extcun.SeparableConvolution_cuda_forward(
                     input,
                     vertical,
                     self.filter_size_vertical,
@@ -120,7 +121,7 @@ class SeparableConvolution(torch.autograd.Function):
         #exit()
 
         if grad_output.is_cuda == True:
-            _ext.cunnex.SeparableConvolution_cuda_backward(
+            extcun.SeparableConvolution_cuda_backward(
                     input,
                     vertical,
                     self.filter_size_vertical,
