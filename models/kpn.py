@@ -264,21 +264,22 @@ class KPN_VIS(torch.nn.Module):
         print("Filter size vertical horizontal: ", self.filter_size_vertical,  self.filter_size_horizontal, self.modulePad(variableInput1).size(), self.moduleVertical_new1(variableCombine).size(), horizontal_kernels.size() )
 
         # Original Code
-        variableDot2 = SeparableConvolution(self.filter_size_vertical,  self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
-        variableDot2 = self.moduleVertical_new1(variableCombine)
+        #variableDot2 = SeparableConvolution(self.filter_size_vertical,  self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
+        #variableDot2 = self.moduleVertical_new1(variableCombine)
+        
+        # Trial Run
         # variableDot2 = self.moduleVertical_new1(variableCombine)
         # variableDot2 = torch.zeros((1,3,375,1242))
         
-        '''
+        # New replacement
         trial_v2 = self.moduleVertical_new1(variableCombine)
         print('trial_v2', trial_v2.size())
         trial_v2 = self.additional_dot_kernal(trial_v2)
         print('trial_v2', trial_v2.size())
         trial_v2 = self.additional_ada_pool(trial_v2)
         print('trial_v2', trial_v2.size())
-        '''
-
-        #variableDot2 = trial_v2
+        
+        variableDot2 = trial_v2
         print('SeparableConvolution output: ', variableDot2.size())
         #return  variableDot1.detach(), variableDot2
         return  variableDot2
