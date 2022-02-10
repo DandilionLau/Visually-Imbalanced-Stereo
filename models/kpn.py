@@ -214,21 +214,9 @@ class KPN_VIS(torch.nn.Module):
 
         variableCombine = variableUpsample2 + variableConv2
 
-        '''
-        horizontal_kernels = self.moduleHorizontal_new1(variableCombine)
-        slice1 = horizontal_kernels[0,30,:,:].detach()
-        slice1 -= torch.min(slice1)
-        slice1 /= torch.max(slice1)
-        slice1 *= 255
-        PIL.Image.fromarray(slice1.cpu().numpy().astype(np.uint8)).save("no_gf.jpg")
-        variableDot1 = SeparableConvolution(self.filter_size_vertical,self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels )
-        '''
 
         horizontal_kernels = self.moduleHorizontal_new1(variableCombine)
 
-        # Enabled guided filters by uncommenting this.
-        # horizontal_kernels = self.guided_filter(rgb2gray(variableInput1), horizontal_kernels)
-        
         n,c,h,w = horizontal_kernels.size()
         max_mean = 0
         max_c = 0
@@ -240,48 +228,17 @@ class KPN_VIS(torch.nn.Module):
 
 
         horizontal_kernels[:,max_c,:,:] = self.guided_filter(rgb2gray(variableInput1), horizontal_kernels[:,max_c,:,:].clone().unsqueeze(1))
-        '''
-        slice2 = horizontal_kernels[0,max_c,:,:]
-        slice2 -= torch.min(slice2)
-        slice2 /= torch.max(slice2)
-        slice2 *= 255
-        PIL.Image.fromarray(slice2.cpu().numpy().astype(np.uint8)).save("gf.jpg")
-        '''
-        '''
-        self.g_input = input
-        self.g_vertical = vertical
-        self.g_horizontal = horizontal
-        intBatches = input.size(0)
-        intInputDepth = input.size(1)
-        intInputHeight = input.size(2)
-        intInputWidth = input.size(3)
-        intFilterSizeVertical = vertical.size(1)
-        intFilterSizeHorizontal = horizontal.size(1)
-        intOutputHeight = min(vertical.size(2), horizontal.size(2))
-        intOutputWidth = min(vertical.size(3), horizontal.size(3))
-        '''
-
-        print("Filter size vertical horizontal: ", self.filter_size_vertical,  self.filter_size_horizontal, self.modulePad(variableInput1).size(), self.moduleVertical_new1(variableCombine).size(), horizontal_kernels.size() )
 
         # Original Code
-        #variableDot2 = SeparableConvolution(self.filter_size_vertical,  self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
+        variableDot2 = SeparableConvolution(self.filter_size_vertical,  self.filter_size_horizontal)(self.modulePad(variableInput1), self.moduleVertical_new1(variableCombine), horizontal_kernels)
+        variableDot2 = self.moduleVertical_new1(variableCombine)
+        
+        
+        # If 'SeparableConv' doesnt work, this is a temporal new replacement
         #variableDot2 = self.moduleVertical_new1(variableCombine)
-        
-        # Trial Run
-        # variableDot2 = self.moduleVertical_new1(variableCombine)
-        # variableDot2 = torch.zeros((1,3,375,1242))
-        
-        # New replacement
-        trial_v2 = self.moduleVertical_new1(variableCombine)
-        print('trial_v2', trial_v2.size())
-        trial_v2 = self.additional_dot_kernal(trial_v2)
-        print('trial_v2', trial_v2.size())
-        trial_v2 = self.additional_ada_pool(trial_v2)
-        print('trial_v2', trial_v2.size())
-        
-        variableDot2 = trial_v2
-        print('SeparableConvolution output: ', variableDot2.size())
-        #return  variableDot1.detach(), variableDot2
+        #variableDot2 = self.additional_dot_kernal(variableDot2)
+        #variableDot2 = self.additional_ada_pool(variableDot2)
+
         return  variableDot2
     # end
 # end

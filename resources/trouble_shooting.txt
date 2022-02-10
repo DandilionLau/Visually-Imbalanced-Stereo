@@ -1,0 +1,4 @@
+Common Error
+
+1. For CUDA 8.0, you may need an older GPU. I.e 1080Ti or Titan 
+2. If you see cffi.error.VerficationError. try: `export CXXFLAGS="-std=c++11"` and `export CFLAGS="-std=c99"`

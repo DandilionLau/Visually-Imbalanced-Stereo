@@ -1,3 +1,5 @@
+result/*
+dataset/*
 weights/*
 KPN.pth
 

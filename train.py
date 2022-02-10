@@ -49,7 +49,6 @@ if(opt.gpu_num == 1):
 else:
     torch.cuda.device(range(opt.gpu_num+1))
 
-print('Where Am I')
 
 perceptual_layers = ['0', '5', '10', '19', '28']
 norm_stats = {'mean': [0.5, 0.5, 0.5], 'std': [0.5, 0.5, 0.5]}
@@ -262,25 +261,11 @@ def test(epoch):
             variablePaddingFirst = variablePaddingFirst.cuda()
             variablePaddingSecond = variablePaddingSecond.cuda()
             
-            print(variablePaddingFirst.size(), variablePaddingSecond.size())
-
-
             # ModuleNetwork
             variablePaddingOutput = moduleNetwork(variablePaddingFirst, variablePaddingSecond)
-
-
-            print('SeparableConvolution output: ', variablePaddingOutput.size())
-            
-            #variablePaddingOutput = modulePaddingOutput(variablePaddingOutput)
-            #print('SeparableConvolution pad output: ', variablePaddingOutput.size())
-
-
             right_view_gt = torch.autograd.Variable(right_view_cpu).cpu()
-
-
             right_view_pred = variablePaddingOutput.cpu()
 
-            print(right_view_gt.size())
 
             # Here 
             avg_psnr += 10 * math.log10(1 / critirion(right_view_pred, right_view_gt).item())

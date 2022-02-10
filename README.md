@@ -1,26 +1,20 @@
 ## Visually Imbalanced Stereo Matching
 
 <p float="left">
-  <img src="./resources/good.jpg" width="100" /> 
-  <img src="./resources/bad.jpg" width="100" />
+  <img src="resources/good.jpg" width="100" /> 
+  <img src="resources/bad.jpg" width="100" />
 </p>
-
 
 This repository contains code for the paper: [Visually Imbalanced Stereo Matching](https://openaccess.thecvf.com/content_CVPR_2020/papers/Liu_Visually_Imbalanced_Stereo_Matching_CVPR_2020_paper.pdf).
 
 If you find the work useful please consider citing our paper
-```
-@article{vis_liu_2020,
+```bibtex
+@InProceedings{VISM_Liu_2020,
   title = {Visually Imbalanced Stereo Matching},
-  author = {Liu, Yicun and 
-  				Ren, Jimmy and 
-				Zhang, Jiawei and 
-				Liu, Jianbo and 
-				Lin, Mude},
+  author = {Liu, Yicun and Ren, Jimmy and Zhang, Jiawei and Liu, Jianbo and Lin, Mude},
   booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
   month = {June},
-year = {2020}
-}
+year = {2020}}
 ```
 
 ## Installation 
@@ -47,11 +41,11 @@ This repository contains a toy KITTI dataset. To run inference for a single pair
 ```
 bash run.sh
 ```
-You should expect Average. PSNR and Average. SSIM as your output.
+You should expect average PSNR and average SSIM as your output, as well as saved output images.
 
 ## Reproducing KITTI Results
 
-To produce the experiment results in the paper. You'll need to prepare KITTI Stereo 2015 dataset. You'll need to download the prepared dataset from [[OneDrive]](), or from the official Kitti website. You should perserve your folder sturcture like this:
+To produce the experiment results in the paper. You'll need to prepare KITTI Stereo 2015 dataset. You'll need to download the prepared dataset from [GoogleDrive](https://drive.google.com/file/d/1qSb6VflBR66xseCI8JaMFEssL2XN1Hx_/view?usp=sharing), or from the official Kitti website. You should perserve your folder sturcture like this:
 
 ```
 dataset\
@@ -60,7 +54,7 @@ dataset\
          |---train
 ```
 
-To reproduce the inference of view synthesis network, 
+To reproduce the inference of view synthesis network. You'll need to modify `--scale_factor` from 1 to 5, 10, 20 to see the performance under different imbalance factor.
 ```
 python train.py 
          --only_test 1 
@@ -78,5 +72,6 @@ python train.py
          --image_height 375 
          --weight_source ours
 ```
-
+### Trouble Shooting
+We acknowledge that the code is slightly old. Error could easily arise from using the compiled CUDA kernel. We provide a troubleshooting to solve the error that you could face in [Here](resources/trouble_shooting.txt)
 
