@@ -1,13 +1,8 @@
 ## Visually Imbalanced Stereo Matching
 
-<p>
-  <img src="resources/good.jpg" width="50%" /> 
-  <img src="resources/bad.jpg" width="50%" />
-</p>
-
 <div class="row">
   <div class="column">
-    <<img src="resources/good.jpg" width="100%" /> 
+    <img src="resources/good.jpg" width="100%" /> 
   </div>
   <div class="column">
     <img src="resources/bad.jpg" width="100%" />
