@@ -1,9 +1,18 @@
 ## Visually Imbalanced Stereo Matching
 
-<p float="left">
+<p>
   <img src="resources/good.jpg" width="50%" /> 
   <img src="resources/bad.jpg" width="50%" />
 </p>
+
+<div class="row">
+  <div class="column">
+    <<img src="resources/good.jpg" width="100%" /> 
+  </div>
+  <div class="column">
+    <img src="resources/bad.jpg" width="100%" />
+  </div>
+</div>
 
 This repository contains code for the paper: [Visually Imbalanced Stereo Matching](https://openaccess.thecvf.com/content_CVPR_2020/papers/Liu_Visually_Imbalanced_Stereo_Matching_CVPR_2020_paper.pdf).
 
